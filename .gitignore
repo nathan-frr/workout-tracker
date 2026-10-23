@@ -113,5 +113,7 @@ postgres-data/
 *.tmp
 *.temp
 
+.editorconfig
+
 PROJECT.md
 AGENTS.md
