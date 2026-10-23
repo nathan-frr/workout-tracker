@@ -9,8 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />
   </ItemGroup>
-
+  
   <ItemGroup>
+    <ProjectReference Include="..\WorkoutTracker.Application\WorkoutTracker.Application.csproj" />
+    <ProjectReference Include="..\WorkoutTracker.Infrastructure\WorkoutTracker.Infrastructure.csproj" />
     <ProjectReference Include="..\WorkoutTracker.Domain\WorkoutTracker.Domain.csproj" />
   </ItemGroup>
 
