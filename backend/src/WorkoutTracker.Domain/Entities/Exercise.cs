@@ -20,6 +20,10 @@ public class Exercise
 
     public Guid? CreatedByUserId { get; set; }
 
+    public bool IsDeleted { get; set; } = false;
+
+    public DateTimeOffset? DeletedAtUtc { get; set; }
+
     public ICollection<ExerciseMuscleGroup> MuscleGroups
     { get; set; } = [];
 }
