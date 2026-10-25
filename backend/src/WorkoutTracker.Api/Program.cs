@@ -1,9 +1,13 @@
 using WorkoutTracker.Infrastructure;
 using WorkoutTracker.Infrastructure.Data;
+using WorkoutTracker.Application.Services.Exercises;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddControllers();
+builder.Services.AddScoped<IExerciseService, ExercisesService>();
 
 builder.Services.AddOpenApi();
 
@@ -23,5 +27,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();
