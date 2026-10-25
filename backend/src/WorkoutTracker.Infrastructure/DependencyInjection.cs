@@ -21,6 +21,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString));
         services.AddScoped<IApplicationDbContext>(serviceProvider =>
             serviceProvider.GetRequiredService<WorkoutTrackerDbContext>());
+        services.AddScoped<WorkoutTrackerDbContextInitializer>();
 
         return services;
     }
