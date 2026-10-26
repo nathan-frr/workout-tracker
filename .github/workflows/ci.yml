@@ -9,8 +9,22 @@ permissions:
 
 jobs:
   backend:
-    name: Build backend
+    name: Build and test backend
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: workout_tracker_test
+          POSTGRES_USER: workout_tracker_test
+          POSTGRES_PASSWORD: ci_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U workout_tracker_test -d workout_tracker_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
     defaults:
       run:
         working-directory: backend/src
@@ -28,6 +42,11 @@ jobs:
 
       - name: Build solution
         run: dotnet build WorkoutTracker.slnx --configuration Release --no-restore
+
+      - name: Run backend tests
+        run: dotnet test WorkoutTracker.slnx --configuration Release --no-build --no-restore
+        env:
+          ConnectionStrings__WorkoutTrackerTest: "Host=localhost;Port=5432;Database=workout_tracker_test;Username=workout_tracker_test;Password=ci_test_password"
 
   frontend:
     name: Build frontend
