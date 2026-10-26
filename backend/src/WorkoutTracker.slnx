@@ -1,3 +1,7 @@
 <Solution>
+  <Project Path="../tests/WorkoutTracker.IntegrationTests/WorkoutTracker.IntegrationTests.csproj" />
+  <Project Path="../tests/WorkoutTracker.UnitTests/WorkoutTracker.UnitTests.csproj" />
   <Project Path="WorkoutTracker.Api/WorkoutTracker.Api.csproj" />
+  <Project Path="WorkoutTracker.Application/WorkoutTracker.Application.csproj" />
+  <Project Path="WorkoutTracker.Domain/WorkoutTracker.Domain.csproj" />
 </Solution>
