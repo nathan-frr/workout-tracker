@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+
+.home-screen {
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.home-screen__header {
+  padding: 1.25rem var(--page-padding);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h1 {
+  color: var(--green-900);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.home-screen__content {
+  display: grid;
+  min-height: calc(100dvh - 4.25rem);
+  place-items: center;
+  padding: 2rem var(--page-padding);
+  text-align: center;
+}
+
+h2 {
+  max-width: 32rem;
+  color: var(--green-800);
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.15;
+}
