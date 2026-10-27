@@ -1,5 +1,4 @@
-import { isPlatformBrowser } from '@angular/common';
-import { Component, inject, PLATFORM_ID, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ExerciseService } from '../../data-access/exercises-api.service';
 import { Exercise } from '../../models/exercise.model';
 
@@ -11,16 +10,12 @@ import { Exercise } from '../../models/exercise.model';
 })
 export class ExerciseListComponent {
   private readonly exerciseService = inject(ExerciseService);
-  private readonly platformId = inject(PLATFORM_ID);
-
   readonly exercises = signal<Exercise[]>([]);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
   constructor() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadExercises();
-    }
+    this.loadExercises();
   }
 
   loadExercises(): void {
