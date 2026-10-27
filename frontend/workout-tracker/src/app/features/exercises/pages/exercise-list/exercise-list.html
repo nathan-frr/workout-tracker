@@ -1,0 +1,28 @@
+<section class="exercise-list" aria-labelledby="exercise-list-heading">
+  <div class="exercise-list__header">
+    <p class="exercise-list__eyebrow">Your library</p>
+    <h1 id="exercise-list-heading">Exercises</h1>
+  </div>
+
+  @if (loading()) {
+    <p class="exercise-list__status">Loading exercises...</p>
+  } @else if (error(); as message) {
+    <p class="exercise-list__status" role="alert">{{ message }}</p>
+    <button class="exercise-list__retry" type="button" (click)="loadExercises()">Retry</button>
+  } @else if (exercises().length === 0) {
+    <p class="exercise-list__status">No exercises found.</p>
+  } @else {
+    <ul class="exercise-list__items">
+      @for (exercise of exercises(); track exercise.id) {
+        <li class="exercise-card">
+          @if (exercise.mediaUrl) {
+            <img class="exercise-card__image" [src]="exercise.mediaUrl" [alt]="exercise.name" />
+          } @else {
+            <div class="exercise-card__placeholder" aria-hidden="true">+</div>
+          }
+          <span class="exercise-card__name">{{ exercise.name }}</span>
+        </li>
+      }
+    </ul>
+    }
+</section>

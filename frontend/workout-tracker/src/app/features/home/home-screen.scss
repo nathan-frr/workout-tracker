@@ -26,11 +26,8 @@ h1 {
 }
 
 .home-screen__content {
-  display: grid;
   min-height: calc(100dvh - 4.25rem);
-  place-items: center;
   padding: 2rem var(--page-padding);
-  text-align: center;
 }
 
 h2 {
@@ -38,4 +35,5 @@ h2 {
   color: var(--green-800);
   font-size: clamp(1.75rem, 5vw, 2.5rem);
   line-height: 1.15;
+  text-align: left;
 }
