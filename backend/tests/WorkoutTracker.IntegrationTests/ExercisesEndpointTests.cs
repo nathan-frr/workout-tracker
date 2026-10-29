@@ -1,13 +1,7 @@
 using System.Net.Http.Json;
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-using Npgsql;
 
 using WorkoutTracker.Application.Services.Exercises.DTOs;
 using WorkoutTracker.Domain.Entities;
@@ -16,33 +10,13 @@ using WorkoutTracker.Infrastructure.Data;
 
 namespace WorkoutTracker.IntegrationTests;
 
-public sealed class ExercisesEndpointTests
+public sealed class ExercisesEndpointTests(WorkoutTrackerApiFixture fixture) : IClassFixture<WorkoutTrackerApiFixture>
 {
     [Fact]
     public async Task GetExercises_ReturnsActiveExercisesOrderedWithMuscleGroups()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<ExercisesEndpointTests>(optional: true)
-            .AddEnvironmentVariables()
-            .Build();
-        var connectionString =
-            configuration.GetConnectionString("WorkoutTrackerTest")
-            ?? throw new InvalidOperationException(
-                "Set ConnectionStrings:WorkoutTrackerTest with User Secrets or an environment variable before running integration tests.");
-
-        var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
-        if (connectionStringBuilder.Database != "workout_tracker_test")
-        {
-            throw new InvalidOperationException(
-                "Integration tests can only run against the dedicated 'workout_tracker_test' database.");
-        }
-
-        using var factory = new WorkoutTrackerApiFactory(connectionString);
-        using var client = factory.CreateClient();
-
-        await using var scope = factory.Services.CreateAsyncScope();
+        await using var scope = fixture.Factory.Services.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<WorkoutTrackerDbContext>();
-        await context.Database.MigrateAsync();
 
         var testRunId = Guid.NewGuid().ToString("N");
         var benchPressName = $"test-{testRunId}-bench-press";
@@ -65,7 +39,7 @@ public sealed class ExercisesEndpointTests
                 CreateExercise(deletedName, exerciseIds[2], isDeleted: true));
             await context.SaveChangesAsync();
 
-            using var response = await client.GetAsync("/api/exercises");
+            using var response = await fixture.Client.GetAsync("/api/exercises");
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
 
             var exercises = await response.Content.ReadFromJsonAsync<ExerciseResponse[]>();
@@ -107,6 +81,173 @@ public sealed class ExercisesEndpointTests
         }
     }
 
+    [Fact]
+    public async Task GetById_ReturnsCorrectExerciseWithMuscleGroups()
+    {
+        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        var context = scope.ServiceProvider.GetRequiredService<WorkoutTrackerDbContext>();
+
+        var testRunId = Guid.NewGuid().ToString("N");
+        var benchPressName = $"test-{testRunId}-bench-press";
+        var chestName = $"a-{testRunId}-chest";
+        var tricepsName = $"z-{testRunId}-triceps";
+        var exGuid = Guid.NewGuid();
+
+        var benchPress = CreateExercise(benchPressName, id: exGuid);
+        benchPress.MuscleGroups.Add(CreateExerciseMuscleGroup(benchPress, chestName, "Primary"));
+        benchPress.MuscleGroups.Add(CreateExerciseMuscleGroup(benchPress, tricepsName, "Secondary"));
+
+        try
+        {
+            context.Exercises.Add(benchPress);
+            await context.SaveChangesAsync();
+
+            using var response = await fixture.Client.GetAsync($"/api/exercises/{exGuid}");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+
+            var exercise = await response.Content.ReadFromJsonAsync<ExerciseResponse>();
+            Assert.NotNull(exercise);
+            Assert.Equal(exGuid, exercise.Id);
+            Assert.Equal(benchPressName, exercise.Name);
+
+            Assert.Collection(
+                exercise.MuscleGroups,
+                muscleGroup =>
+                {
+                    Assert.Equal(chestName, muscleGroup.Name);
+                    Assert.Equal("Primary", muscleGroup.Role);
+                },
+                muscleGroup =>
+                {
+                    Assert.Equal(tricepsName, muscleGroup.Name);
+                    Assert.Equal("Secondary", muscleGroup.Role);
+                });
+        }
+        finally
+        {
+            var createdExercises = await context.Exercises
+                .IgnoreQueryFilters()
+                .Where(exercise => exercise.Id == benchPress.Id)
+                .ToListAsync();
+            context.Exercises.RemoveRange(createdExercises);
+            await context.SaveChangesAsync();
+
+            var muscleGroups = await context.MuscleGroups
+                .Where(muscleGroup => muscleGroup.Name == chestName || muscleGroup.Name == tricepsName)
+                .ToListAsync();
+            context.MuscleGroups.RemoveRange(muscleGroups);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    [Fact]
+    public async Task GetById_ReturnsNotFoundForUnknownExercise()
+    {
+        using var response = await fixture.Client.GetAsync($"/api/exercises/{Guid.NewGuid()}");
+
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CreateExercise_ReturnsCreatedExerciseAndPersistsIt()
+    {
+        await using var scope = fixture.Factory.Services.CreateAsyncScope();
+        var context = scope.ServiceProvider.GetRequiredService<WorkoutTrackerDbContext>();
+
+        var exerciseName = $"test-{Guid.NewGuid():N}-create";
+        var muscleGroup = new MuscleGroup { Name = $"test-{Guid.NewGuid():N}-muscle-group" };
+        context.MuscleGroups.Add(muscleGroup);
+        await context.SaveChangesAsync();
+
+        var request = new CreateExerciseRequest(
+            Name: exerciseName,
+            Description: "Integration test exercise",
+            EquipmentType: EquipmentType.Dumbbell,
+            MediaUrl: "https://example.test/exercises/test-create.jpg",
+            TrackingMode: TrackingMode.RepsAndWeight,
+            MuscleGroups: [new CreateExerciseMuscleGroupRequest(muscleGroup.Id, "Primary")],
+            CreatedByUserId: null);
+        Guid? createdExerciseId = null;
+
+        try
+        {
+            using var response = await fixture.Client.PostAsJsonAsync("/api/exercises", request);
+
+            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+            var createdExercise = await response.Content.ReadFromJsonAsync<ExerciseResponse>();
+            Assert.NotNull(createdExercise);
+
+            createdExerciseId = createdExercise.Id;
+            AssertResponseMatchesRequest(createdExercise, request, muscleGroup.Name);
+
+            var persistedExercise = await context.Exercises
+                .IgnoreQueryFilters()
+                .SingleAsync(exercise => exercise.Id == createdExercise.Id);
+
+            AssertEntityMatchesRequest(persistedExercise, request);
+            Assert.False(persistedExercise.IsDeleted);
+
+            var persistedMuscleGroup = await context.ExerciseMuscleGroups
+                .Include(exerciseMuscleGroup => exerciseMuscleGroup.MuscleGroup)
+                .SingleAsync(exerciseMuscleGroup => exerciseMuscleGroup.ExerciseId == createdExercise.Id);
+
+            Assert.Equal(muscleGroup.Id, persistedMuscleGroup.MuscleGroupId);
+            Assert.Equal(muscleGroup.Name, persistedMuscleGroup.MuscleGroup.Name);
+            Assert.Equal("Primary", persistedMuscleGroup.Role);
+        }
+        finally
+        {
+            if (createdExerciseId is Guid exerciseId)
+            {
+                var createdMuscleGroups = await context.ExerciseMuscleGroups
+                    .Where(exerciseMuscleGroup => exerciseMuscleGroup.ExerciseId == exerciseId)
+                    .ToListAsync();
+                context.ExerciseMuscleGroups.RemoveRange(createdMuscleGroups);
+
+                var createdExercise = await context.Exercises
+                    .IgnoreQueryFilters()
+                    .SingleOrDefaultAsync(exercise => exercise.Id == exerciseId);
+
+                if (createdExercise is not null)
+                {
+                    context.Exercises.Remove(createdExercise);
+                }
+
+                await context.SaveChangesAsync();
+            }
+
+            context.MuscleGroups.Remove(muscleGroup);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private static void AssertResponseMatchesRequest(
+        ExerciseResponse response,
+        CreateExerciseRequest request,
+        string muscleGroupName)
+    {
+        Assert.Equal(request.Name, response.Name);
+        Assert.Equal(request.Description, response.Description);
+        Assert.Equal(request.EquipmentType, response.EquipmentType);
+        Assert.Equal(request.MediaUrl, response.MediaUrl);
+        Assert.Equal(request.TrackingMode, response.TrackingMode);
+        Assert.False(response.IsBuiltIn);
+        var group = Assert.Single(response.MuscleGroups);
+        Assert.Equal(request.MuscleGroups[0].MuscleGroupId, group.Id);
+        Assert.Equal(muscleGroupName, group.Name);
+        Assert.Equal(request.MuscleGroups[0].Role, group.Role);
+    }
+
+    private static void AssertEntityMatchesRequest(Exercise exercise, CreateExerciseRequest request)
+    {
+        Assert.Equal(request.Name, exercise.Name);
+        Assert.Equal(request.Description, exercise.Description);
+        Assert.Equal(request.EquipmentType, exercise.EquipmentType);
+        Assert.Equal(request.MediaUrl, exercise.MediaUrl);
+        Assert.Equal(request.TrackingMode, exercise.TrackingMode);
+        Assert.False(exercise.IsBuiltIn);
+    }
+
     private static Exercise CreateExercise(string name, Guid? id = null, bool isDeleted = false) => new()
     {
         Id = id ?? Guid.NewGuid(),
@@ -129,23 +270,4 @@ public sealed class ExercisesEndpointTests
         };
     }
 
-    private sealed class WorkoutTrackerApiFactory(string connectionString) : WebApplicationFactory<Program>
-    {
-        protected override IHost CreateHost(IHostBuilder builder)
-        {
-            builder.ConfigureHostConfiguration(configuration =>
-              configuration.AddInMemoryCollection(
-                new Dictionary<string, string?>
-                {
-                    ["ConnectionStrings:WorkoutTracker"] = connectionString
-                }));
-
-            return base.CreateHost(builder);
-        }
-
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            builder.UseEnvironment("Testing");
-        }
-    }
 }
