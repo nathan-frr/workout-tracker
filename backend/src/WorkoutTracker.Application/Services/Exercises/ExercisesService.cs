@@ -37,6 +37,16 @@ public sealed class ExercisesService(IApplicationDbContext context) : IExerciseS
             .Select(ToResponse)
             .ToListAsync(cancellationToken);
     }
+    public async Task<ExerciseResponse?> GetById(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return await context.Exercises
+            .AsNoTracking()
+            .Where(exercise => !exercise.IsDeleted && exercise.Id == id)
+            .Select(ToResponse)
+            .SingleOrDefaultAsync(cancellationToken);
+    }
 
     public async Task<ExerciseResponse> Create(
         CreateExerciseRequest request,

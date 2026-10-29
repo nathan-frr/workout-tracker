@@ -17,6 +17,16 @@ public sealed class ExercisesController(IExerciseService exerciseService) : Cont
         return Ok(exercises);
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ExerciseResponse>> GetById(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var exercise = await exerciseService.GetById(id, cancellationToken);
+
+        return exercise is null ? NotFound() : Ok(exercise);
+    }
+
     [HttpPost]
     public async Task<ActionResult<ExerciseResponse>> Create(
     CreateExerciseRequest request,
@@ -24,8 +34,7 @@ public sealed class ExercisesController(IExerciseService exerciseService) : Cont
     {
         var exercise = await exerciseService.Create(request, cancellationToken);
 
-        //return CreatedAtAction(nameof(GetById), new { id = exercise.Id }, exercise);
-        return Created($"/api/exercises/{exercise.Id}", exercise);
+        return CreatedAtAction(nameof(GetById), new { id = exercise.Id }, exercise);
     }
 }
 

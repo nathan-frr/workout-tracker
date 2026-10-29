@@ -6,6 +6,9 @@ public interface IExerciseService
 {
     Task<IReadOnlyList<ExerciseResponse>> GetAll(
         CancellationToken cancellationToken);
+    Task<ExerciseResponse?> GetById(
+        Guid id,
+        CancellationToken cancellationToken);
 
     Task<ExerciseResponse> Create(
         CreateExerciseRequest request,
