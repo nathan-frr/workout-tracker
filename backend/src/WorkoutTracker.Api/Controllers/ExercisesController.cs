@@ -16,4 +16,16 @@ public sealed class ExercisesController(IExerciseService exerciseService) : Cont
         var exercises = await exerciseService.GetAll(cancellationToken);
         return Ok(exercises);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<ExerciseResponse>> Create(
+    CreateExerciseRequest request,
+    CancellationToken cancellationToken)
+    {
+        var exercise = await exerciseService.Create(request, cancellationToken);
+
+        //return CreatedAtAction(nameof(GetById), new { id = exercise.Id }, exercise);
+        return Created($"/api/exercises/{exercise.Id}", exercise);
+    }
 }
+

@@ -11,3 +11,8 @@ public record ExerciseResponse(
     TrackingMode TrackingMode,
     bool IsBuiltIn,
     IReadOnlyList<ExerciseMuscleGroupResponse> MuscleGroups);
+
+public record ExerciseMuscleGroupResponse(
+    int Id,
+    string Name,
+    string Role);
