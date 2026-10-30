@@ -7,7 +7,7 @@ namespace WorkoutTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class ExercisesController(IExerciseService exerciseService) : ControllerBase
+public sealed class ExercisesController(IExercisesService exerciseService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<ExerciseResponse>>> GetAll(

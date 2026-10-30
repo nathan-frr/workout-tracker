@@ -81,8 +81,7 @@ public sealed class ExercisesControllerTests
             EquipmentType: EquipmentType.Barbell,
             MediaUrl: null,
             TrackingMode: TrackingMode.RepsAndWeight,
-            MuscleGroups: [],
-            CreatedByUserId: null
+            MuscleGroups: []
         );
         var expected = new ExerciseResponse[]
         {
@@ -109,7 +108,7 @@ public sealed class ExercisesControllerTests
 
     private sealed class StubExerciseService(
         IReadOnlyList<ExerciseResponse> exercises,
-        ExerciseResponse? createdExercise) : IExerciseService
+        ExerciseResponse? createdExercise) : IExercisesService
     {
         public CancellationToken? ReceivedCancellationToken { get; private set; }
         public Guid? ReceivedExerciseId { get; private set; }

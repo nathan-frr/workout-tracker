@@ -1,13 +1,15 @@
 using WorkoutTracker.Infrastructure;
 using WorkoutTracker.Infrastructure.Data;
 using WorkoutTracker.Application.Services.Exercises;
+using WorkoutTracker.Application.Services.Workouts;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<IExerciseService, ExercisesService>();
+builder.Services.AddScoped<IExercisesService, ExercisesService>();
+builder.Services.AddScoped<IWorkoutsService, WorkoutsService>();
 
 builder.Services.AddOpenApi();
 

@@ -8,8 +8,7 @@ public record CreateExerciseRequest(
     EquipmentType EquipmentType,
     string? MediaUrl,
     TrackingMode TrackingMode,
-    IReadOnlyList<CreateExerciseMuscleGroupRequest> MuscleGroups,
-    string? CreatedByUserId);
+    IReadOnlyList<CreateExerciseMuscleGroupRequest> MuscleGroups);
 
 public record CreateExerciseMuscleGroupRequest(
     int MuscleGroupId,

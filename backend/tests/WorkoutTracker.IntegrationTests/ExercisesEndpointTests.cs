@@ -165,8 +165,7 @@ public sealed class ExercisesEndpointTests(WorkoutTrackerApiFixture fixture) : I
             EquipmentType: EquipmentType.Dumbbell,
             MediaUrl: "https://example.test/exercises/test-create.jpg",
             TrackingMode: TrackingMode.RepsAndWeight,
-            MuscleGroups: [new CreateExerciseMuscleGroupRequest(muscleGroup.Id, "Primary")],
-            CreatedByUserId: null);
+            MuscleGroups: [new CreateExerciseMuscleGroupRequest(muscleGroup.Id, "Primary")]);
         Guid? createdExerciseId = null;
 
         try

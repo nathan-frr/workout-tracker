@@ -2,7 +2,7 @@ namespace WorkoutTracker.Application.Services.Exercises;
 
 using WorkoutTracker.Application.Services.Exercises.DTOs;
 
-public interface IExerciseService
+public interface IExercisesService
 {
     Task<IReadOnlyList<ExerciseResponse>> GetAll(
         CancellationToken cancellationToken);

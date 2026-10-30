@@ -8,24 +8,24 @@ using WorkoutTracker.Domain.Entities;
 
 namespace WorkoutTracker.Application.Services.Exercises;
 
-public sealed class ExercisesService(IApplicationDbContext context) : IExerciseService
+public sealed class ExercisesService(IApplicationDbContext context) : IExercisesService
 {
 
     private static Expression<Func<Exercise, ExerciseResponse>> ToResponse =>
     exercise => new ExerciseResponse(
-        exercise.Id,
-        exercise.Name,
-        exercise.Description,
-        exercise.EquipmentType,
-        exercise.MediaUrl,
-        exercise.TrackingMode,
-        exercise.IsBuiltIn,
-        exercise.MuscleGroups
+        Id: exercise.Id,
+        Name: exercise.Name,
+        Description: exercise.Description,
+        EquipmentType: exercise.EquipmentType,
+        MediaUrl: exercise.MediaUrl,
+        TrackingMode: exercise.TrackingMode,
+        IsBuiltIn: exercise.IsBuiltIn,
+        MuscleGroups: exercise.MuscleGroups
             .OrderBy(group => group.MuscleGroup.Name)
             .Select(group => new ExerciseMuscleGroupResponse(
-                group.MuscleGroupId,
-                group.MuscleGroup.Name,
-                group.Role))
+                Id: group.MuscleGroupId,
+                Name: group.MuscleGroup.Name,
+                Role: group.Role))
             .ToList());
     public async Task<IReadOnlyList<ExerciseResponse>> GetAll(
         CancellationToken cancellationToken)
