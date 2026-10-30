@@ -29,12 +29,19 @@ public sealed class ExercisesController(IExercisesService exerciseService) : Con
 
     [HttpPost]
     public async Task<ActionResult<ExerciseResponse>> Create(
-    CreateExerciseRequest request,
-    CancellationToken cancellationToken)
+        CreateExerciseRequest request,
+        CancellationToken cancellationToken)
     {
-        var exercise = await exerciseService.Create(request, cancellationToken);
+        try
+        {
+            var exercise = await exerciseService.Create(request, cancellationToken);
 
-        return CreatedAtAction(nameof(GetById), new { id = exercise.Id }, exercise);
+            return CreatedAtAction(nameof(GetById), new { id = exercise.Id }, exercise);
+        }
+        catch (ArgumentException exception)
+        {
+            return ValidationProblem(detail: exception.Message);
+        }
     }
 }
 
