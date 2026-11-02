@@ -1,3 +1,6 @@
+import { EquipmentType } from "./equipment-type";
+import { TrackingMode } from "./tracking-mode";
+
 export interface ExerciseMuscleGroup {
   id: number;
   name: string;
@@ -8,9 +11,9 @@ export interface Exercise {
   id: string;
   name: string;
   description: string | null;
-  equipmentType: number;
+  equipmentType: EquipmentType;
   mediaUrl: string | null;
-  trackingMode: number;
+  trackingMode: TrackingMode;
   isBuiltIn: boolean;
   muscleGroups: ExerciseMuscleGroup[];
 }

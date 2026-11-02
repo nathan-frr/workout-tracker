@@ -7,6 +7,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 
 import { ExerciseService } from './exercises-api.service';
+import { EquipmentType } from '../models/equipment-type';
+import { TrackingMode } from '../models/tracking-mode';
 
 describe('ExerciseService', () => {
   let service: ExerciseService;
@@ -35,9 +37,9 @@ describe('ExerciseService', () => {
         id: 'exercise-id',
         name: 'Bench Press',
         description: null,
-        equipmentType: 1,
+        equipmentType: EquipmentType.Barbell,
         mediaUrl: null,
-        trackingMode: 0,
+        trackingMode: TrackingMode.RepsAndWeight,
         isBuiltIn: true,
         muscleGroups: [],
       },

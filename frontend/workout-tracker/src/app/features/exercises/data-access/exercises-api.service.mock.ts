@@ -1,14 +1,16 @@
 import { Observable, of } from 'rxjs';
 import { Exercise } from '../models/exercise.model';
+import { EquipmentType } from '../models/equipment-type';
+import { TrackingMode } from '../models/tracking-mode';
 
 export const mockExercises: Exercise[] = [
   {
     id: '00000000-0000-0000-0000-000000000001',
     name: 'Bench Press',
     description: 'Barbell chest press.',
-    equipmentType: 1,
+    equipmentType: EquipmentType.Barbell,
     mediaUrl: null,
-    trackingMode: 0,
+    trackingMode: TrackingMode.RepsAndWeight,
     isBuiltIn: true,
     muscleGroups: [
       { id: 1, name: 'Chest', role: 'Primary' },
@@ -18,9 +20,9 @@ export const mockExercises: Exercise[] = [
     id: '00000000-0000-0000-0000-000000000002',
     name: 'Bodyweight Squat',
     description: 'Squat using bodyweight resistance.',
-    equipmentType: 0,
+    equipmentType: EquipmentType.Bodyweight,
     mediaUrl: null,
-    trackingMode: 0,
+    trackingMode: TrackingMode.Reps,
     isBuiltIn: true,
     muscleGroups: [
       { id: 2, name: 'Quadriceps', role: 'Primary' },
