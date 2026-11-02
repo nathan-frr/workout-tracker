@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,11 @@ namespace WorkoutTracker.IntegrationTests;
 
 public sealed class ExercisesEndpointTests(WorkoutTrackerApiFixture fixture) : IClassFixture<WorkoutTrackerApiFixture>
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
+
     [Fact]
     public async Task GetExercises_ReturnsActiveExercisesOrderedWithMuscleGroups()
     {
@@ -42,7 +49,7 @@ public sealed class ExercisesEndpointTests(WorkoutTrackerApiFixture fixture) : I
             using var response = await fixture.Client.GetAsync("/api/exercises");
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
 
-            var exercises = await response.Content.ReadFromJsonAsync<ExerciseResponse[]>();
+            var exercises = await response.Content.ReadFromJsonAsync<ExerciseResponse[]>(JsonOptions);
             Assert.NotNull(exercises);
 
             var testExercises = exercises
@@ -105,7 +112,7 @@ public sealed class ExercisesEndpointTests(WorkoutTrackerApiFixture fixture) : I
             using var response = await fixture.Client.GetAsync($"/api/exercises/{exGuid}");
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
 
-            var exercise = await response.Content.ReadFromJsonAsync<ExerciseResponse>();
+            var exercise = await response.Content.ReadFromJsonAsync<ExerciseResponse>(JsonOptions);
             Assert.NotNull(exercise);
             Assert.Equal(exGuid, exercise.Id);
             Assert.Equal(benchPressName, exercise.Name);
@@ -170,10 +177,10 @@ public sealed class ExercisesEndpointTests(WorkoutTrackerApiFixture fixture) : I
 
         try
         {
-            using var response = await fixture.Client.PostAsJsonAsync("/api/exercises", request);
+            using var response = await fixture.Client.PostAsJsonAsync("/api/exercises", request, JsonOptions);
 
             Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
-            var createdExercise = await response.Content.ReadFromJsonAsync<ExerciseResponse>();
+            var createdExercise = await response.Content.ReadFromJsonAsync<ExerciseResponse>(JsonOptions);
             Assert.NotNull(createdExercise);
 
             createdExerciseId = createdExercise.Id;
