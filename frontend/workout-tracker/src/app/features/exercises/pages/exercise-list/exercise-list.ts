@@ -1,6 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
-import { ExerciseService } from '../../data-access/exercises-api.service';
-import { Exercise } from '../../models/exercise.model';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ExercisesStore } from '../../data-access/exercises.store';
 
 @Component({
   selector: 'exercise-list',
@@ -8,29 +7,16 @@ import { Exercise } from '../../models/exercise.model';
   templateUrl: './exercise-list.html',
   styleUrl: './exercise-list.scss',
 })
-export class ExerciseListComponent {
-  private readonly exerciseService = inject(ExerciseService);
-  readonly exercises = signal<Exercise[]>([]);
-  readonly loading = signal(false);
-  readonly error = signal<string | null>(null);
+export class ExerciseListComponent implements OnInit {
+  exercisesStore = inject(ExercisesStore);
+  
+  readonly exercises = this.exercisesStore.exercises;
+  readonly loading = this.exercisesStore.loading;
+  readonly error = this.exercisesStore.error;
 
-  constructor() {
-    this.loadExercises();
+  ngOnInit(): void {
+    this.exercisesStore.loadExercises();
   }
 
-  loadExercises(): void {
-    this.loading.set(true);
-    this.error.set(null);
-
-    this.exerciseService.getExercises().subscribe({
-      next: (exercises) => {
-        this.exercises.set(exercises);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Could not load exercises. Please try again.');
-        this.loading.set(false);
-      },
-    });
-  }
+  constructor() {}
 }
