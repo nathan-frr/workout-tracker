@@ -1,8 +1,9 @@
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { WorkoutSession } from '../models/workout-session.model';
 import { WorkoutType } from '../models/workout-type';
 import { EquipmentType } from '../../exercises/models/equipment-type';
 import { TrackingMode } from '../../exercises/models/tracking-mode';
+import { CreateWorkoutRequest } from '../models/create-workout-request.model';
 
 export const mockWorkouts: WorkoutSession[] = [
   {
@@ -46,10 +47,50 @@ export const mockWorkouts: WorkoutSession[] = [
 
 export class MockWorkoutsApiService {
   getWorkouts(): Observable<WorkoutSession[]> {
-    return of(mockWorkouts);
+    return of(structuredClone(mockWorkouts));
   }
   
-  getWorkoutById(): Observable<WorkoutSession> {
-    return of(mockWorkouts[0]);
+  getWorkoutById(id: string): Observable<WorkoutSession> {
+      const workout = mockWorkouts.find(workout => workout.id === id);
+  
+      if (!workout) {
+        return throwError(() => new Error('Workout not found'));
+      }
+  
+      return of(structuredClone(workout));
+  }
+  
+  createWorkout(request: CreateWorkoutRequest): Observable<WorkoutSession> {
+    const newWorkout: WorkoutSession = {
+      id: crypto.randomUUID(),
+      userId: '00002-2555',
+      title: request.title,
+      workoutDate: request.workoutDate,
+      startedAtTime: request.startedAtTime,
+      durationInMinutes: request.durationInMinutes,
+      location: request.location,
+      workoutType: request.workoutType,
+      notes: request.notes,
+      createdAt: new Date().toISOString(),
+      exercises: request.exercises.map(workoutExercise => ({
+        id: crypto.randomUUID(),
+        exercise: {
+          id: workoutExercise.exerciseId,
+          name: 'Bench Press',
+          mediaUrl: null,
+          equipmentType: EquipmentType.Barbell,
+          trackingMode: TrackingMode.RepsAndWeight,
+        },
+        order: workoutExercise.order,
+        sets: workoutExercise.sets.map(set => ({
+          id: crypto.randomUUID(),
+          ...set,
+        })),
+      })),
+    };
+
+    mockWorkouts.push(newWorkout);
+
+    return of(structuredClone(newWorkout));
   }
 }

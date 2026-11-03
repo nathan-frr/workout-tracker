@@ -1,7 +1,8 @@
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Exercise } from '../models/exercise.model';
 import { EquipmentType } from '../models/equipment-type';
 import { TrackingMode } from '../models/tracking-mode';
+import { CreateExerciseRequest } from '../models/create-exercise-request.model';
 
 export const mockExercises: Exercise[] = [
   {
@@ -30,12 +31,56 @@ export const mockExercises: Exercise[] = [
   },
 ];
 
+export const mockExerciseRequest: CreateExerciseRequest = {
+    name: 'Bench Press',
+    description: 'Barbell chest press.',
+    equipmentType: EquipmentType.Barbell,
+    mediaUrl: null,
+    trackingMode: TrackingMode.RepsAndWeight,
+    muscleGroups: [
+      { muscleGroupId: 1, role: 'Primary' },
+    ],
+};
+
+export const mockMuscleGroups = [
+  { id: 1, name: 'Chest' },
+  { id: 2, name: 'Quadriceps' },
+  { id: 3, name: 'Back' },
+];
+
 export class MockExercisesApiService {
   getExercises(): Observable<Exercise[]> {
-    return of(mockExercises);
+    return of(structuredClone(mockExercises));
   }
 
-  getExerciseById(): Observable<Exercise> {
-    return of(mockExercises[0]);
+  getExerciseById(id: string): Observable<Exercise> {
+    const exercise = mockExercises.find(exercise => exercise.id === id);
+
+    if (!exercise) {
+      return throwError(() => new Error('Exercise not found'));
+    }
+
+    return of(structuredClone(exercise));
+  }
+
+  createExercise(request: CreateExerciseRequest): Observable<Exercise> {
+    const newExercise: Exercise = {
+      id: crypto.randomUUID(),
+      name: request.name,
+      description: request.description,
+      equipmentType: request.equipmentType,
+      mediaUrl: request.mediaUrl,
+      trackingMode: request.trackingMode,
+      isBuiltIn: false,
+      muscleGroups: request.muscleGroups.map(group => ({
+        id: group.muscleGroupId,
+        name: mockMuscleGroups.find(m => m.id === group.muscleGroupId)?.name ?? 'Unknown',
+        role: group.role
+      }))
+    };
+
+    mockExercises.push(newExercise);
+
+    return of(structuredClone(newExercise));
   }
 }
