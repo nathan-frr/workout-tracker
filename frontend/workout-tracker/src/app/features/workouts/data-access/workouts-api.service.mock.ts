@@ -48,4 +48,8 @@ export class MockWorkoutsApiService {
   getWorkouts(): Observable<WorkoutSession[]> {
     return of(mockWorkouts);
   }
+  
+  getWorkoutById(): Observable<WorkoutSession> {
+    return of(mockWorkouts[0]);
+  }
 }

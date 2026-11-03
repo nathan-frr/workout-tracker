@@ -10,4 +10,8 @@ export class WorkoutService {
   getWorkouts(): Observable<WorkoutSession[]> {
     return this.http.get<WorkoutSession[]>('/api/workouts');
   }
+  
+  getWorkoutById(id: string): Observable<WorkoutSession> {
+    return this.http.get<WorkoutSession>(`/api/workouts/${id}`);
+  }
 }

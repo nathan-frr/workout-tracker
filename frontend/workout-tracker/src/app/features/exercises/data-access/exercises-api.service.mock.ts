@@ -34,4 +34,8 @@ export class MockExercisesApiService {
   getExercises(): Observable<Exercise[]> {
     return of(mockExercises);
   }
+
+  getExerciseById(): Observable<Exercise> {
+    return of(mockExercises[0]);
+  }
 }

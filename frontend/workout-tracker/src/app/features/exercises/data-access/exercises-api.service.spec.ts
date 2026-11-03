@@ -55,4 +55,28 @@ describe('ExerciseService', () => {
 
     request.flush(response);
   });
+
+  it('should get one specific exercise from the API', () => {
+    const response = 
+      {
+        id: 'exercise-id',
+        name: 'Bench Press',
+        description: null,
+        equipmentType: EquipmentType.Barbell,
+        mediaUrl: null,
+        trackingMode: TrackingMode.RepsAndWeight,
+        isBuiltIn: true,
+        muscleGroups: [],
+      };
+
+    service.getExerciseById('exercise-id').subscribe((exercise) => {
+      expect(exercise).toEqual(response);
+    });
+
+    const request = httpTesting.expectOne('/api/exercises/exercise-id');
+
+    expect(request.request.method).toBe('GET');
+
+    request.flush(response);
+  });
 });
