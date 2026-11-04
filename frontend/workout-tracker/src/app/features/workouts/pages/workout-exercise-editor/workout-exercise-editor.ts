@@ -1,7 +1,7 @@
 import { Component, inject, input, OnInit } from '@angular/core';
-import { FormBuilder,Validators, ReactiveFormsModule, FormGroup, FormControl} from '@angular/forms';
+import { FormBuilder,Validators, ReactiveFormsModule, FormGroup, FormControl, FormArray} from '@angular/forms';
 import { Exercise } from '../../../exercises/models/exercise.model';
-import { TRACKING_MODE_FIELDS } from '../../../exercises/models/tracking-mode';
+import { TRACKING_MODE_FIELDS, TrackingField } from '../../../exercises/models/tracking-mode';
 
 
 @Component({
@@ -27,8 +27,16 @@ export class WorkoutExerciseEditor implements OnInit {
     this.addSet();
   }
 
+  get sets(): FormArray {
+    return this.exerciseForm.controls.sets;
+  }
+
+  get metrics(): TrackingField[] {
+    return TRACKING_MODE_FIELDS[this.exercise().trackingMode];
+  }
+
   addSet(): void {
-    this.exerciseForm.controls.sets.push(this.createSetForm());
+    this.sets.push(this.createSetForm());
   }
 
   createSetForm(): FormGroup {

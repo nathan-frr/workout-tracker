@@ -1,1 +1,29 @@
-<p>workout-exercise-editor works!</p>
+<section class="exercise-editor">
+  <form [formGroup]="exerciseForm">
+  <div formArrayName="sets">
+    @for (set of sets.controls; track $index; let i = $index) {
+      <fieldset class="set-row" [formGroupName]="i">
+        <legend>Set {{ i + 1 }}</legend>
+
+        @for (metric of metrics; track metric) {
+          <div class="metric-field">
+            <label [for]="'set-' + i + '-' + metric">{{ metric }}</label>
+            <input
+              [id]="'set-' + i + '-' + metric"
+              type="number"
+              [formControlName]="metric"
+              min="0"
+            />
+          </div>
+        }
+
+      </fieldset>
+    }
+  </div>
+
+  <button class="exercise-editor__add-set" type="button" (click)="addSet()">
+    <span aria-hidden="true">+</span>
+    Add set
+  </button>
+  </form>
+</section>
