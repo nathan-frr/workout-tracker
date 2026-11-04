@@ -3,7 +3,7 @@ import { ExercisesStore } from '../../data-access/exercises.store';
 
 @Component({
   selector: 'exercise-list',
-  standalone: true,
+  imports: [],
   templateUrl: './exercise-list.html',
   styleUrl: './exercise-list.scss',
 })
