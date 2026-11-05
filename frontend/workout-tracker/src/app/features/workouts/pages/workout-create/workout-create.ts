@@ -4,6 +4,8 @@ import { ExercisesStore } from '../../../exercises/data-access/exercises.store';
 import { WorkoutExerciseEditor } from '../workout-exercise-editor/workout-exercise-editor';
 import { WorkoutType } from '../../models/workout-type';
 import { Exercise } from '../../../exercises/models/exercise.model';
+import { WorkoutService } from '../../data-access/workouts-api.service';
+import { CreateWorkoutRequest } from '../../models/create-workout-request.model';
 
 @Component({
   imports: [ReactiveFormsModule, WorkoutExerciseEditor],
@@ -13,6 +15,7 @@ import { Exercise } from '../../../exercises/models/exercise.model';
 })
 export class WorkoutCreate {
   exercisesStore = inject(ExercisesStore);
+  workoutService = inject(WorkoutService);
 
   private fb = inject(FormBuilder);
   
@@ -25,10 +28,11 @@ export class WorkoutCreate {
   workoutForm = this.fb.group({
     title: ['', Validators.required],
     workoutDate: [new Date().toISOString().slice(0, 10), Validators.required],
-    durationInMinutes: [''],
-    location: [''],
-    WorkoutType: [WorkoutType.Other],
-    notes: [''],
+    durationInMinutes: [null],
+    location: [null],
+    workoutType: [WorkoutType.Other],
+    notes: [null],
+    startedAtTime: [null],
     exercises: this.fb.array<FormGroup>([])
   })
 
@@ -39,7 +43,7 @@ export class WorkoutCreate {
   addExercise(exercise: Exercise): void {
     const exerciseForm = this.fb.group({
       exerciseId: [exercise.id, Validators.required],
-      notes: [''],
+      order: [this.exercises.length + 1],
       sets: this.fb.array<FormGroup>([])
     });
 
@@ -47,7 +51,7 @@ export class WorkoutCreate {
   }
 
   selectWorkoutType(type: WorkoutType): void {
-    this.workoutForm.controls.WorkoutType.setValue(type);
+    this.workoutForm.controls.workoutType.setValue(type);
   }
 
   get exercises(): FormArray<FormGroup> {
@@ -62,4 +66,14 @@ export class WorkoutCreate {
     )!;
   }
 
+  saveWorkout(): void {
+    this.workoutService.createWorkout(this.workoutForm.value as CreateWorkoutRequest).subscribe({
+      next: workoutSession => {
+        console.log("Workout registered", workoutSession) 
+      },
+      error: (e) => {
+        console.log("Error", e)
+      }
+    })
+  }
 }

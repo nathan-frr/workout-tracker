@@ -41,6 +41,9 @@ export class WorkoutExerciseEditor {
       ])
     );
 
-    return this.fb.group(controls);
+    return this.fb.group({
+      setNumber: this.fb.control(this.sets.length + 1, [Validators.required, Validators.min(1)]),
+      ...controls,
+    });
   }
 }

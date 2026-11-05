@@ -28,7 +28,7 @@
         @for (type of workoutTypes; track type) {
             <button
             type="button"
-            [class.selected]="workoutForm.controls.WorkoutType.value === type"
+            [class.selected]="workoutForm.controls.workoutType.value === type"
             (click)="selectWorkoutType(type)"
             >
             {{ type }}
@@ -42,5 +42,6 @@
         [exerciseForm]="exerciseGroup"
         />
     }
-  </form>
+    </form>
+    <button (click)="saveWorkout()">Save Workout</button>
 </section>
