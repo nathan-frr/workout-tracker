@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { WorkoutExerciseEditor } from './workout-exercise-editor';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Exercise } from '../../../exercises/models/exercise.model';
 import { EquipmentType } from '../../../exercises/models/equipment-type';
 import { TrackingMode } from '../../../exercises/models/tracking-mode';
@@ -21,6 +21,10 @@ describe('WorkoutExerciseEditor', () => {
       ],
     };
 
+  const mockForm = new FormGroup({
+    sets: new FormArray([]),
+  });
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [WorkoutExerciseEditor, ReactiveFormsModule],
@@ -29,6 +33,7 @@ describe('WorkoutExerciseEditor', () => {
     fixture = TestBed.createComponent(WorkoutExerciseEditor);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('exercise' , mockExercise);
+    fixture.componentRef.setInput('exerciseForm' , mockForm);
     await fixture.whenStable();
   });
 

@@ -10,25 +10,14 @@ import { TRACKING_MODE_FIELDS, TrackingField } from '../../../exercises/models/t
   styleUrl: './workout-exercise-editor.scss',
   templateUrl: './workout-exercise-editor.html',
 })
-export class WorkoutExerciseEditor implements OnInit {
+export class WorkoutExerciseEditor {
   exercise = input.required<Exercise>();
+  exerciseForm = input.required<FormGroup>();
 
   private fb = inject(FormBuilder);
 
-  exerciseForm = this.fb.group({
-    exerciseId: ['', Validators.required],
-    notes: [''],
-    sets: this.fb.array<FormGroup>([])
-  });
-
-  ngOnInit(): void {
-    this.exerciseForm.patchValue({exerciseId: this.exercise().id})
-
-    this.addSet();
-  }
-
   get sets(): FormArray {
-    return this.exerciseForm.controls.sets;
+    return this.exerciseForm().get('sets') as FormArray;
   }
 
   get metrics(): TrackingField[] {

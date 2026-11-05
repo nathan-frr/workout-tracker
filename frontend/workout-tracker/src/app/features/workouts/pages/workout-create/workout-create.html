@@ -1,1 +1,46 @@
-<p>workout-create works!</p>
+<section class="exercise-editor">
+    @if (loading()) {
+        <p class="exercise-list__status">Loading exercises...</p>
+    } @else if (error(); as message) {
+        <p class="exercise-list__status" role="alert">{{ message }}</p>
+        <button class="exercise-list__retry" type="button" (click)="exercisesStore.loadExercises()">Retry</button>
+    } @else if (fetchedExercises().length === 0) {
+        <p class="exercise-list__status">No exercises found.</p>
+    } @else {
+        <ul class="exercise-list__items">
+        @for (exercise of fetchedExercises(); track exercise.id) {
+            <li class="exercise-card">
+                <span class="exercise-card__name">{{ exercise.name }}</span>
+                <button class="exercise-editor__add-set" type="button" (click)="addExercise(exercise)">
+                    <span aria-hidden="true">+</span>
+                    Add exercise
+                </button>
+            </li>
+        }
+        </ul>
+    }
+  <form [formGroup]="workoutForm">
+    <input type="string" placeholder="Title" formControlName="title"/>
+    <input type="date" formControlName="workoutDate"/>
+    <input type="number" placeholder="Duration (min)" formControlName="durationInMinutes"/>
+    <input type="string" placeholder="Location" formControlName="location"/>
+    <div class="workout-type-selector">
+        @for (type of workoutTypes; track type) {
+            <button
+            type="button"
+            [class.selected]="workoutForm.controls.WorkoutType.value === type"
+            (click)="selectWorkoutType(type)"
+            >
+            {{ type }}
+            </button>
+        }
+    </div>
+
+    @for (exerciseGroup of exercises.controls; track exerciseGroup) {
+        <workout-exercise-editor
+        [exercise]="getExercise(exerciseGroup)"
+        [exerciseForm]="exerciseGroup"
+        />
+    }
+  </form>
+</section>
