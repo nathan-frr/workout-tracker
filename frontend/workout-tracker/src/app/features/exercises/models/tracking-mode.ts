@@ -8,14 +8,14 @@ export enum TrackingMode {
     DurationAndDistance = 'DurationAndDistance',
 }
 
-export type TrackingField = 'reps' | 'weight' | 'duration' | 'distance';
+export type TrackingField = 'reps' | 'weight' | 'durationInSeconds' | 'distanceInMeters';
 
 export const TRACKING_MODE_FIELDS: Record<TrackingMode, TrackingField[]> = {
   [TrackingMode.RepsAndWeight]: ['reps', 'weight'],
   [TrackingMode.Reps]: ['reps'],
-  [TrackingMode.Duration]: ['duration'],
-  [TrackingMode.DurationAndWeight]: ['duration', 'weight'],
-  [TrackingMode.Distance]: ['distance'],
-  [TrackingMode.DistanceAndWeight]: ['distance', 'weight'],
-  [TrackingMode.DurationAndDistance]: ['duration', 'distance'],
+  [TrackingMode.Duration]: ['durationInSeconds'],
+  [TrackingMode.DurationAndWeight]: ['durationInSeconds', 'weight'],
+  [TrackingMode.Distance]: ['distanceInMeters'],
+  [TrackingMode.DistanceAndWeight]: ['distanceInMeters', 'weight'],
+  [TrackingMode.DurationAndDistance]: ['durationInSeconds', 'distanceInMeters'],
 };

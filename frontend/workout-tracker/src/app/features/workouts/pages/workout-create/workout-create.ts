@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder,Validators, ReactiveFormsModule, FormGroup, FormArray} from '@angular/forms';
+import { FormBuilder, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { ExercisesStore } from '../../../exercises/data-access/exercises.store';
 import { WorkoutExerciseEditor } from '../workout-exercise-editor/workout-exercise-editor';
 import { WorkoutType } from '../../models/workout-type';
 import { Exercise } from '../../../exercises/models/exercise.model';
 import { WorkoutService } from '../../data-access/workouts-api.service';
 import { CreateWorkoutRequest } from '../../models/create-workout-request.model';
+import { SetForm, WorkoutExerciseForm, WorkoutForm } from '../../models/workout-form';
 
 @Component({
   imports: [ReactiveFormsModule, WorkoutExerciseEditor],
@@ -25,15 +26,15 @@ export class WorkoutCreate {
   
   workoutTypes = Object.values(WorkoutType);
 
-  workoutForm = this.fb.group({
-    title: ['', Validators.required],
-    workoutDate: [new Date().toISOString().slice(0, 10), Validators.required],
-    durationInMinutes: [null],
-    location: [null],
-    workoutType: [WorkoutType.Other],
-    notes: [null],
-    startedAtTime: [null],
-    exercises: this.fb.array<FormGroup>([])
+  workoutForm: WorkoutForm = this.fb.group({
+    title: this.fb.nonNullable.control('', Validators.required),
+    workoutDate: this.fb.nonNullable.control(new Date().toISOString().slice(0, 10), Validators.required),
+    durationInMinutes: this.fb.control<number | null>(null),
+    location: this.fb.control<string | null>(null),
+    workoutType: this.fb.nonNullable.control(WorkoutType.Other),
+    notes: this.fb.control<string | null>(null),
+    startedAtTime: this.fb.control<string | null>(null),
+    exercises: new FormArray<WorkoutExerciseForm>([], Validators.required)
   })
 
   ngOnInit(): void {
@@ -41,10 +42,10 @@ export class WorkoutCreate {
   }
 
   addExercise(exercise: Exercise): void {
-    const exerciseForm = this.fb.group({
-      exerciseId: [exercise.id, Validators.required],
-      order: [this.exercises.length + 1],
-      sets: this.fb.array<FormGroup>([])
+    const exerciseForm: WorkoutExerciseForm = this.fb.group({
+      exerciseId: this.fb.nonNullable.control(exercise.id, Validators.required),
+      order: this.fb.nonNullable.control(this.exercises.length + 1),
+      sets: new FormArray<SetForm>([], Validators.required),
     });
 
     this.exercises.push(exerciseForm);
@@ -54,12 +55,12 @@ export class WorkoutCreate {
     this.workoutForm.controls.workoutType.setValue(type);
   }
 
-  get exercises(): FormArray<FormGroup> {
+  get exercises(): FormArray<WorkoutExerciseForm> {
     return this.workoutForm.controls.exercises;
   }
 
-  getExercise(form: FormGroup): Exercise {
-    const id = form.get('exerciseId')?.value;
+  getExercise(form: WorkoutExerciseForm): Exercise {
+    const id = form.controls.exerciseId.value;
 
     return this.fetchedExercises().find(
       exercise => exercise.id === id
@@ -67,7 +68,13 @@ export class WorkoutCreate {
   }
 
   saveWorkout(): void {
-    this.workoutService.createWorkout(this.workoutForm.value as CreateWorkoutRequest).subscribe({
+    if (this.workoutForm.invalid) {
+      this.workoutForm.markAllAsTouched();
+      return;
+    }
+    const request: CreateWorkoutRequest = this.workoutForm.getRawValue();
+
+    this.workoutService.createWorkout(request).subscribe({
       next: workoutSession => {
         console.log("Workout registered", workoutSession) 
       },
@@ -75,5 +82,9 @@ export class WorkoutCreate {
         console.log("Error", e)
       }
     })
+  }
+
+  log() {
+    console.log(this.workoutForm.getRawValue())
   }
 }
