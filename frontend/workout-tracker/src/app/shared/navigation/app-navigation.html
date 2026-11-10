@@ -1,0 +1,19 @@
+<nav class="app-navigation" aria-label="Primary navigation">
+  <a class="app-navigation__brand" [routerLink]="['/']">WorkoutTracker</a>
+
+  <ul class="app-navigation__items">
+    @for (item of items; track item.path) {
+      <li>
+        <a
+          class="app-navigation__link"
+          [routerLink]="item.path ? '/' + item.path : '/'"
+          routerLinkActive="app-navigation__link--active"
+          [routerLinkActiveOptions]="{ exact: item.path === '' }"
+          ariaCurrentWhenActive="page"
+        >
+          {{ item.label }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
