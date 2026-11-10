@@ -1,14 +1,21 @@
 <section class="exercise-editor">
+
+    <input
+        type="search"
+        placeholder="Search exercises..."
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)"
+    >
     @if (loading()) {
         <p class="exercise-list__status">Loading exercises...</p>
     } @else if (error(); as message) {
         <p class="exercise-list__status" role="alert">{{ message }}</p>
         <button class="exercise-list__retry" type="button" (click)="exercisesStore.loadExercises()">Retry</button>
-    } @else if (fetchedExercises().length === 0) {
+    } @else if (searchTerm().length > 0 && filteredExercises().length === 0) {
         <p class="exercise-list__status">No exercises found.</p>
     } @else {
         <ul class="exercise-list__items">
-        @for (exercise of fetchedExercises(); track exercise.id) {
+        @for (exercise of filteredExercises(); track exercise.id) {
             <li class="exercise-card">
                 <span class="exercise-card__name">{{ exercise.name }}</span>
                 <button class="exercise-editor__add-set" type="button" (click)="addExercise(exercise)">

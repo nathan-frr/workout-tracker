@@ -1,0 +1,71 @@
+<section class="workout-list" aria-labelledby="workout-list-heading">
+  <div class="workout-list__header">
+    <p class="workout-list__eyebrow">Your history</p>
+    <h1 id="workout-list-heading">Workouts</h1>
+    <!-- <p class="workout-list__intro">Keep an eye on the work you have put in.</p> -->
+  </div>
+
+  @if (loading()) {
+    <p class="workout-list__status">Loading exercises...</p>
+  } @else if (error(); as message) {
+    <p class="workout-list__status" role="alert">{{ message }}</p>
+    <button class="workout-list__retry" type="button" (click)="workoutsStore.loadWorkouts()">Retry</button>
+  } @else if (workouts().length === 0) {
+    <p class="workout-list__status">No exercises found.</p>
+  } @else {
+    <ul class="workout-list__items">
+      @for (workout of workouts(); track workout.id) {
+        <li class="workout-card">
+          <div class="workout-card__header">
+            <div>
+              <p class="workout-card__date">{{ workout.workoutDate }}</p>
+              <h2 class="workout-card__title">{{ workout.title }}</h2>
+            </div>
+            @if (workout.workoutType) {
+              <span class="workout-card__type">{{ workout.workoutType }}</span>
+            }
+          </div>
+
+          <div class="workout-card__meta">
+            @if (workout.location) {
+              <span>{{ workout.location }}</span>
+            }
+            @if (workout.durationInMinutes) {
+              <span>{{ workout.durationInMinutes }} min</span>
+            }
+            <span>
+                {{ workout.exercises.length }} exercise{{ workout.exercises.length === 1 ? '' : 's' }}
+            </span>
+          </div>
+
+          <div class="workout-card__exercises">
+            @for (workoutExercise of workout.exercises; track workoutExercise.id) {
+              <div class="workout-card__exercise">
+                <h3>{{ workoutExercise.exercise.name }}</h3>
+                <div class="workout-card__sets">
+                  @for (set of workoutExercise.sets; track set.id) {
+                    <span class="workout-card__set">
+                      <span class="workout-card__set-number">Set {{ set.setNumber }}</span>
+                      @if (set.reps !== null) {
+                        <span>{{ set.reps }} reps</span>
+                      }
+                      @if (set.weight !== null) {
+                        <span>{{ set.weight }} kg</span>
+                      }
+                      @if (set.durationInSeconds !== null) {
+                        <span>{{ set.durationInSeconds }} sec</span>
+                      }
+                      @if (set.distanceInMeters !== null) {
+                        <span>{{ set.distanceInMeters }} m</span>
+                      }
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+    }
+</section>

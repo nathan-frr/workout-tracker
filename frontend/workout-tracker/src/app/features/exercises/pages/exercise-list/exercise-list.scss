@@ -1,7 +1,8 @@
 :host {
 	display: block;
-	max-width: 56rem;
-	margin-top: 3rem;
+	max-width: 64rem;
+	margin: 0 auto;
+	padding: clamp(2rem, 5vw, 4rem) var(--page-padding) 5rem;
 }
 
 .exercise-list__header {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import { ExercisesStore } from '../../../exercises/data-access/exercises.store';
 import { WorkoutExerciseEditor } from '../workout-exercise-editor/workout-exercise-editor';
@@ -35,7 +35,17 @@ export class WorkoutCreate {
     notes: this.fb.control<string | null>(null),
     startedAtTime: this.fb.control<string | null>(null),
     exercises: new FormArray<WorkoutExerciseForm>([], Validators.required)
-  })
+  });
+
+  searchTerm = signal('');
+
+  filteredExercises = computed(() => {
+    const query = this.searchTerm().toLowerCase();
+
+    return query.length ? this.fetchedExercises().filter(e =>
+      e.name.toLowerCase().includes(query)
+    ) : [];
+  });
 
   ngOnInit(): void {
     this.exercisesStore.loadExercises();
