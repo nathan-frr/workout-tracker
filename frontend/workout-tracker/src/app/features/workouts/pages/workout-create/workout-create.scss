@@ -1,11 +1,19 @@
 :host {
 	display: block;
-	margin-top: 2rem;
+	max-width: 64rem;
+	margin: 0 auto;
+	padding: clamp(2rem, 5vw, 4rem) var(--page-padding) 5rem;
 }
-
 .exercise-editor {
 	display: grid;
 	gap: 1.25rem;
+}
+
+h1 {
+	margin: 0;
+	color: var(--green-900);
+	font-size: clamp(1.75rem, 4vw, 2.25rem);
+	line-height: 1.1;
 }
 
 .exercise-editor > form {
@@ -16,6 +24,33 @@
 	border-radius: var(--radius-lg);
 	background: rgb(255 255 255 / 88%);
 	box-shadow: var(--shadow-card);
+}
+
+.workout-create__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.75rem;
+}
+
+.workout-create__log {
+	min-height: var(--control-height);
+	padding: 0 1rem;
+	border: 1px solid var(--color-border-strong);
+	border-radius: var(--radius-md);
+	background: var(--color-surface);
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	font-weight: 700;
+}
+
+.workout-create__log:hover {
+	border-color: var(--green-700);
+	background: var(--color-primary-soft);
+	color: var(--color-primary-soft-text);
+}
+
+.workout-create__save {
+	min-width: 9rem;
 }
 
 .exercise-list__status {
@@ -139,6 +174,14 @@ workout-exercise-editor {
 }
 
 @media (max-width: 30rem) {
+	.workout-create__actions {
+		flex-direction: column-reverse;
+	}
+
+	.workout-create__actions button {
+		width: 100%;
+	}
+
 	.exercise-card {
 		align-items: stretch;
 		flex-direction: column;

@@ -1,11 +1,30 @@
 <section class="exercise-editor">
+    <h1>New workout</h1>
 
+  <form [formGroup]="workoutForm">
+    <input type="string" placeholder="Title" formControlName="title"/>
+    <input type="date" formControlName="workoutDate"/>
+    <input type="number" placeholder="Duration (min)" formControlName="durationInMinutes"/>
+    <input type="string" placeholder="Location" formControlName="location"/>
+    <div class="workout-type-selector">
+        @for (type of workoutTypes; track type) {
+            <button
+            type="button"
+            [class.selected]="workoutForm.controls.workoutType.value === type"
+            (click)="selectWorkoutType(type)"
+            >
+            {{ type }}
+            </button>
+        }
+    </div>
+    
     <input
         type="search"
         placeholder="Search exercises..."
         [value]="searchTerm()"
         (input)="searchTerm.set($any($event.target).value)"
     >
+
     @if (loading()) {
         <p class="exercise-list__status">Loading exercises...</p>
     } @else if (error(); as message) {
@@ -26,22 +45,6 @@
         }
         </ul>
     }
-  <form [formGroup]="workoutForm">
-    <input type="string" placeholder="Title" formControlName="title"/>
-    <input type="date" formControlName="workoutDate"/>
-    <input type="number" placeholder="Duration (min)" formControlName="durationInMinutes"/>
-    <input type="string" placeholder="Location" formControlName="location"/>
-    <div class="workout-type-selector">
-        @for (type of workoutTypes; track type) {
-            <button
-            type="button"
-            [class.selected]="workoutForm.controls.workoutType.value === type"
-            (click)="selectWorkoutType(type)"
-            >
-            {{ type }}
-            </button>
-        }
-    </div>
 
     @for (exerciseGroup of exercises.controls; track exerciseGroup) {
         <workout-exercise-editor
@@ -50,6 +53,10 @@
         />
     }
     </form>
-    <button (click)="log()">Log</button>
-    <button (click)="saveWorkout()">Save Workout</button>
+        <div class="workout-create__actions">
+            <button class="workout-create__log" type="button" (click)="log()">Log</button>
+            <button class="button-primary workout-create__save" type="button" (click)="saveWorkout()">
+                Save workout
+            </button>
+        </div>
 </section>

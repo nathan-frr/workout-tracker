@@ -4,6 +4,9 @@
     <h1 id="workout-list-heading">Workouts</h1>
     <!-- <p class="workout-list__intro">Keep an eye on the work you have put in.</p> -->
   </div>
+  <div class="workout-list__actions">
+    <button class="button-primary" type="button" (click)="createWorkout()">Create new workout</button>
+  </div>
 
   @if (loading()) {
     <p class="workout-list__status">Loading exercises...</p>

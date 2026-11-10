@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { WorkoutCreate } from '../workout-create/workout-create';
 import { WorkoutsStore } from '../../data-access/workouts.store';
+import { Router } from '@angular/router';
 
 @Component({
-  imports: [WorkoutCreate],
+  imports: [],
   selector: 'workout-overview',
   styleUrl: './workout-overview.scss',
   templateUrl: './workout-overview.html',
 })
 export class WorkoutOverview implements OnInit {
   workoutsStore = inject(WorkoutsStore);
+  private router = inject(Router);
 
   readonly workouts = this.workoutsStore.workouts;
   readonly loading = this.workoutsStore.loading;
@@ -20,4 +21,8 @@ export class WorkoutOverview implements OnInit {
   }
 
   constructor() {}
+
+  createWorkout(): void {
+    this.router.navigate(['/workouts/new']);
+  }
 }
