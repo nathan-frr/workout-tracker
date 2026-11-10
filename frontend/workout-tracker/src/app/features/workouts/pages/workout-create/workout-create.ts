@@ -7,6 +7,8 @@ import { Exercise } from '../../../exercises/models/exercise.model';
 import { WorkoutService } from '../../data-access/workouts-api.service';
 import { CreateWorkoutRequest } from '../../models/create-workout-request.model';
 import { SetForm, WorkoutExerciseForm, WorkoutForm } from '../../models/workout-form';
+import { WorkoutsStore } from '../../data-access/workouts.store';
+import { Router } from '@angular/router';
 
 @Component({
   imports: [ReactiveFormsModule, WorkoutExerciseEditor],
@@ -16,9 +18,11 @@ import { SetForm, WorkoutExerciseForm, WorkoutForm } from '../../models/workout-
 })
 export class WorkoutCreate {
   exercisesStore = inject(ExercisesStore);
+  workoutsStore = inject(WorkoutsStore)
   workoutService = inject(WorkoutService);
 
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   
   readonly fetchedExercises = this.exercisesStore.exercises;
   readonly loading = this.exercisesStore.loading;
@@ -84,9 +88,10 @@ export class WorkoutCreate {
     }
     const request: CreateWorkoutRequest = this.workoutForm.getRawValue();
 
-    this.workoutService.createWorkout(request).subscribe({
+    this.workoutsStore.createWorkout(request).subscribe({
       next: workoutSession => {
-        console.log("Workout registered", workoutSession) 
+        console.log("Workout registered", workoutSession)
+        this.router.navigate(['/workouts'])
       },
       error: (e) => {
         console.log("Error", e)

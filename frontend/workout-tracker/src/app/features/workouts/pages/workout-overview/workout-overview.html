@@ -9,12 +9,12 @@
   </div>
 
   @if (loading()) {
-    <p class="workout-list__status">Loading exercises...</p>
+    <p class="workout-list__status">Loading workouts...</p>
   } @else if (error(); as message) {
     <p class="workout-list__status" role="alert">{{ message }}</p>
     <button class="workout-list__retry" type="button" (click)="workoutsStore.loadWorkouts()">Retry</button>
   } @else if (workouts().length === 0) {
-    <p class="workout-list__status">No exercises found.</p>
+    <p class="workout-list__status">No workouts found.</p>
   } @else {
     <ul class="workout-list__items">
       @for (workout of workouts(); track workout.id) {
