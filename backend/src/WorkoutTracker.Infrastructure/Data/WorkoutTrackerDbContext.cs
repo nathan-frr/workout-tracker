@@ -1,14 +1,17 @@
 using System.Reflection;
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 using WorkoutTracker.Application.Interfaces;
 using WorkoutTracker.Domain.Entities;
+using WorkoutTracker.Infrastructure.Identity;
 
 namespace WorkoutTracker.Infrastructure.Data;
 
 public sealed class WorkoutTrackerDbContext(DbContextOptions<WorkoutTrackerDbContext> options)
-    : DbContext(options), IApplicationDbContext
+    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options), IApplicationDbContext
 {
     public DbSet<Exercise> Exercises => Set<Exercise>();
     public DbSet<ExerciseMuscleGroup> ExerciseMuscleGroups => Set<ExerciseMuscleGroup>();

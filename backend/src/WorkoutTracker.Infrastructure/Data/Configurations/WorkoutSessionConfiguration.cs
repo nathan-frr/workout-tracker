@@ -1,4 +1,5 @@
 using WorkoutTracker.Domain.Entities;
+using WorkoutTracker.Infrastructure.Identity;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -17,5 +18,9 @@ public class WorkoutSessionConfiguration : IEntityTypeConfiguration<WorkoutSessi
         builder.Property(session => session.Notes)
             .HasMaxLength(2000);
         builder.HasIndex(session => new { session.UserId, session.WorkoutDate });
+        builder.HasOne<ApplicationUser>()
+            .WithMany()
+            .HasForeignKey(session => session.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
