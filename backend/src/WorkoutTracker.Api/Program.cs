@@ -55,6 +55,7 @@ builder.Services.AddScoped<IExercisesService, ExercisesService>();
 builder.Services.AddScoped<IWorkoutsService, WorkoutsService>();
 
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -69,6 +70,8 @@ if (app.Environment.IsDevelopment())
     await initializer.SeedAsync();
 
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
