@@ -1,0 +1,79 @@
+<main class="register-screen">
+    <section class="register-screen__intro" aria-labelledby="register-title">
+        <p class="register-screen__eyebrow">WorkoutTracker</p>
+        <h1 id="register-title">Make every workout count.</h1>
+        <p class="register-screen__description">
+            Create your account and start building a record of the work you put in.
+        </p>
+    </section>
+
+    <section class="register-card card" aria-labelledby="register-heading">
+        <div class="register-card__header">
+            <p class="register-card__eyebrow">Get started</p>
+            <h2 id="register-heading">Create your account</h2>
+        </div>
+
+        <form class="register-form" [formGroup]="registerForm" (ngSubmit)="register()">
+            <div class="register-form__name-fields">
+                <div class="register-form__field">
+                    <label for="first-name">First name</label>
+                    <input
+                        id="first-name"
+                        type="text"
+                        placeholder="First Name"
+                        autocomplete="given-name"
+                        formControlName="firstName"
+                    />
+                </div>
+
+                <div class="register-form__field">
+                    <label for="last-name">Last name</label>
+                    <input
+                        id="last-name"
+                        type="text"
+                        placeholder="Last Name"
+                        autocomplete="family-name"
+                        formControlName="lastName"
+                    />
+                </div>
+            </div>
+
+            <div class="register-form__field">
+                <label for="email">Email address</label>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    formControlName="email"
+                />
+            </div>
+
+            <div class="register-form__field">
+                <label for="password">Password</label>
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Create a password"
+                    autocomplete="new-password"
+                    formControlName="password"
+                />
+            </div>
+
+            <button class="button-primary register-form__submit" type="submit">
+                Create account
+            </button>
+
+            @if (error(); as errorMessage) {
+                <p class="register-form__error" role="alert">{{ errorMessage }}</p>
+            }
+        </form>
+
+        <div class="register-card__footer">
+            <span>Already have an account?</span>
+            <button class="register-card__login" type="button" (click)="login()">
+                Sign in
+            </button>
+        </div>
+    </section>
+</main>

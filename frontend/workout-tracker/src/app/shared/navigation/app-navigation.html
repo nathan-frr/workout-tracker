@@ -1,19 +1,28 @@
 <nav class="app-navigation" aria-label="Primary navigation">
   <a class="app-navigation__brand" [routerLink]="['/']">WorkoutTracker</a>
+  @if (currentUser(); as user) {
+    <p class="app-navigation__welcome">
+      <span class="app-navigation__welcome-label">Welcome {{ user.firstName }}</span>
+    </p>
 
-  <ul class="app-navigation__items">
-    @for (item of items; track item.path) {
-      <li>
-        <a
-          class="app-navigation__link"
-          [routerLink]="item.path ? '/' + item.path : '/'"
-          routerLinkActive="app-navigation__link--active"
-          [routerLinkActiveOptions]="{ exact: item.path === '' }"
-          ariaCurrentWhenActive="page"
-        >
-          {{ item.label }}
-        </a>
-      </li>
-    }
-  </ul>
+    <ul class="app-navigation__items">
+      @for (item of items; track item.path) {
+        <li>
+          <a
+            class="app-navigation__link"
+            [routerLink]="item.path ? '/' + item.path : '/'"
+            routerLinkActive="app-navigation__link--active"
+            [routerLinkActiveOptions]="{ exact: item.path === '' }"
+            ariaCurrentWhenActive="page"
+          >
+            {{ item.label }}
+          </a>
+        </li>
+      }
+    </ul>
+
+    <button class="app-navigation__logout" type="button" (click)="logout()">
+      Log out
+    </button>
+  }
 </nav>

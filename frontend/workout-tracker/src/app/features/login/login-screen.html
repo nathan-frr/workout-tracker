@@ -1,0 +1,67 @@
+<main class="login-screen">
+    <section class="login-screen__intro" aria-labelledby="login-title">
+        <p class="login-screen__eyebrow">WorkoutTracker</p>
+        <h1 id="login-title">Build strength, one session at a time.</h1>
+        <p class="login-screen__description">
+            Log your workouts, track your progress, and keep moving towards your goals.
+        </p>
+    </section>
+
+    <section class="login-card card" aria-labelledby="login-heading">
+        <div class="login-card__header">
+            <p class="login-card__eyebrow">Welcome back</p>
+            <h2 id="login-heading">Sign in to your account</h2>
+        </div>
+
+        <form class="login-form" [formGroup]="loginForm" (ngSubmit)="login()">
+            <div class="login-form__field">
+                <label for="email">Email address</label>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    formControlName="email"
+                />
+            </div>
+
+            <div class="login-form__field">
+                <label for="password">Password</label>
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    formControlName="password"
+                />
+            </div>
+
+            <button
+                class="login-form__remember"
+                type="button"
+                [attr.aria-pressed]="rememberMe()"
+                (click)="rememberOnClick()"
+            >
+                <span class="login-form__remember-indicator" aria-hidden="true">
+                    @if (rememberMe()) {
+                        ✓
+                    }
+                </span>
+                <span>Remember me</span>
+            </button>
+
+
+            <button class="button-primary login-form__submit" type="submit">Sign in</button>
+            @if (error(); as errorMessage) {
+                <p class="login-form__error" role="alert">{{ errorMessage }}</p>
+            }
+        </form>
+
+        <div class="login-card__footer">
+            <span>New to WorkoutTracker?</span>
+            <button class="login-card__register" type="button" (click)="register()">
+                Create your account
+            </button>
+        </div>
+    </section>
+</main>
