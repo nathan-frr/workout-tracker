@@ -28,28 +28,35 @@ public sealed class ExercisesService(IApplicationDbContext context) : IExercises
                 Role: group.Role))
             .ToList());
     public async Task<IReadOnlyList<ExerciseResponse>> GetAll(
+        Guid userId,
         CancellationToken cancellationToken)
     {
         return await context.Exercises
             .AsNoTracking()
-            .Where(exercise => !exercise.IsDeleted)
+            .Where(exercise =>
+                !exercise.IsDeleted
+                && (exercise.CreatedByUserId == null || exercise.CreatedByUserId == userId))
             .OrderBy(exercise => exercise.Name)
             .Select(ToResponse)
             .ToListAsync(cancellationToken);
     }
     public async Task<ExerciseResponse?> GetById(
         Guid id,
+        Guid userId,
         CancellationToken cancellationToken)
     {
         return await context.Exercises
             .AsNoTracking()
-            .Where(exercise => !exercise.IsDeleted && exercise.Id == id)
+            .Where(exercise =>
+            !exercise.IsDeleted && exercise.Id == id
+            && (exercise.CreatedByUserId == null || exercise.CreatedByUserId == userId))
             .Select(ToResponse)
             .SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<ExerciseResponse> Create(
         CreateExerciseRequest request,
+        Guid userId,
         CancellationToken cancellationToken)
     {
         ValidateRequest(request);
@@ -86,7 +93,7 @@ public sealed class ExercisesService(IApplicationDbContext context) : IExercises
                     MuscleGroupId = group.MuscleGroupId,
                     Role = group.Role
                 })],
-            CreatedByUserId = null,
+            CreatedByUserId = userId,
         };
         context.Exercises.Add(createdExercise);
         await context.SaveChangesAsync(cancellationToken);

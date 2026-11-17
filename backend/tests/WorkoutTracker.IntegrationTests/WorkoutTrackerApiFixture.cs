@@ -1,3 +1,5 @@
+using System.Net.Http.Json;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +35,11 @@ public sealed class WorkoutTrackerApiFixture : IAsyncLifetime
 
         ConnectionString = connectionString;
         Factory = new WorkoutTrackerApiFactory(connectionString);
-        Client = Factory.CreateClient();
+        Client = Factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            HandleCookies = true,
+            BaseAddress = new Uri("https://localhost")
+        });
     }
 
     public string ConnectionString { get; }
@@ -47,6 +53,17 @@ public sealed class WorkoutTrackerApiFixture : IAsyncLifetime
         await using var scope = Factory.Services.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<WorkoutTrackerDbContext>();
         await context.Database.MigrateAsync();
+
+        using var response = await Client.PostAsJsonAsync(
+            "/api/auth/register",
+            new
+            {
+                Email = $"integration-{Guid.NewGuid():N}@example.test",
+                Password = "TestPassword1",
+                FirstName = "Integration",
+                LastName = "Test"
+            });
+        response.EnsureSuccessStatusCode();
     }
 
     public async Task DisposeAsync()

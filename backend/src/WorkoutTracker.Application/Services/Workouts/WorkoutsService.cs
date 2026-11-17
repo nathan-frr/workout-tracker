@@ -47,27 +47,31 @@ public sealed class WorkoutsService(IApplicationDbContext context) : IWorkoutsSe
                     .ToList()))
             .ToList());
     public async Task<IReadOnlyList<WorkoutResponse>> GetAll(
+        Guid userId,
         CancellationToken cancellationToken)
     {
         return await context.WorkoutSessions
             .AsNoTracking()
+            .Where(workout => workout.UserId == userId)
             .OrderByDescending(workout => workout.WorkoutDate)
             .Select(ToResponse)
             .ToListAsync(cancellationToken);
     }
     public async Task<WorkoutResponse?> GetById(
         Guid id,
+        Guid userId,
         CancellationToken cancellationToken)
     {
         return await context.WorkoutSessions
             .AsNoTracking()
-            .Where(workout => workout.Id == id)
+            .Where(workout => workout.Id == id && workout.UserId == userId)
             .Select(ToResponse)
             .SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<WorkoutResponse> Create(
         CreateWorkoutRequest request,
+        Guid userId,
         CancellationToken cancellationToken)
     {
         ValidateRequest(request);
@@ -78,7 +82,9 @@ public sealed class WorkoutsService(IApplicationDbContext context) : IWorkoutsSe
             .ToArray();
         var existingExerciseIds = await context.Exercises
             .AsNoTracking()
-            .Where(exercise => !exercise.IsDeleted && requestedExerciseIds.Contains(exercise.Id))
+            .Where(exercise =>
+                !exercise.IsDeleted && requestedExerciseIds.Contains(exercise.Id)
+                && (exercise.CreatedByUserId == null || exercise.CreatedByUserId == userId))
             .Select(exercise => exercise.Id)
             .ToListAsync(cancellationToken);
         var missingExerciseIds = requestedExerciseIds
@@ -93,7 +99,7 @@ public sealed class WorkoutsService(IApplicationDbContext context) : IWorkoutsSe
 
         var createdWorkout = new WorkoutSession
         {
-            UserId = Guid.NewGuid(), //Placeholder until realy auth
+            UserId = userId,
             Title = request.Title,
             WorkoutDate = request.WorkoutDate,
             StartedAtTime = request.StartedAtTime,

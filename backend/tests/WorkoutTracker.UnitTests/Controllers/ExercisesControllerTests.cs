@@ -1,3 +1,6 @@
+using System.Security.Claims;
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using WorkoutTracker.Api.Controllers;
@@ -25,13 +28,15 @@ public sealed class ExercisesControllerTests
                 MuscleGroups: [])
         };
         var service = new StubExerciseService(expected, expected[0]);
-        var controller = new ExercisesController(service);
+        var userId = Guid.NewGuid();
+        var controller = CreateController(service, userId);
         var cancellationToken = new CancellationToken(canceled: false);
 
         var actionResult = await controller.GetAll(cancellationToken);
 
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
         Assert.Same(expected, okResult.Value);
+        Assert.Equal(userId, service.ReceivedUserId);
         Assert.Equal(cancellationToken, service.ReceivedCancellationToken);
     }
 
@@ -48,7 +53,8 @@ public sealed class ExercisesControllerTests
             IsBuiltIn: true,
             MuscleGroups: []);
         var service = new StubExerciseService([expected], expected);
-        var controller = new ExercisesController(service);
+            var userId = Guid.NewGuid();
+            var controller = CreateController(service, userId);
         var cancellationToken = new CancellationToken(canceled: false);
 
         var actionResult = await controller.GetById(expected.Id, cancellationToken);
@@ -56,6 +62,7 @@ public sealed class ExercisesControllerTests
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
         Assert.Same(expected, okResult.Value);
         Assert.Equal(expected.Id, service.ReceivedExerciseId);
+        Assert.Equal(userId, service.ReceivedUserId);
         Assert.Equal(cancellationToken, service.ReceivedCancellationToken);
     }
 
@@ -63,7 +70,7 @@ public sealed class ExercisesControllerTests
     public async Task GetById_ReturnsNotFoundWhenExerciseDoesNotExist()
     {
         var service = new StubExerciseService([], null);
-        var controller = new ExercisesController(service);
+        var controller = CreateController(service, Guid.NewGuid());
         var cancellationToken = new CancellationToken(canceled: false);
 
         var actionResult = await controller.GetById(Guid.NewGuid(), cancellationToken);
@@ -96,14 +103,39 @@ public sealed class ExercisesControllerTests
                 [])
         };
         var service = new StubExerciseService(expected, expected[0]);
-        var controller = new ExercisesController(service);
+        var userId = Guid.NewGuid();
+        var controller = CreateController(service, userId);
         var cancellationToken = new CancellationToken(canceled: false);
 
         var actionResult = await controller.Create(request, cancellationToken);
 
         var okResult = Assert.IsType<CreatedAtActionResult>(actionResult.Result);
         Assert.Same(expected[0], okResult.Value);
+        Assert.Equal(userId, service.ReceivedUserId);
         Assert.Equal(cancellationToken, service.ReceivedCancellationToken);
+    }
+
+    private static ExercisesController CreateController(
+        IExercisesService service,
+        Guid userId)
+    {
+        return new ExercisesController(service)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(
+                        new ClaimsIdentity(
+                        [
+                            new Claim(
+                                ClaimTypes.NameIdentifier,
+                                userId.ToString())
+                        ],
+                        authenticationType: "Test"))
+                }
+            }
+        };
     }
 
     private sealed class StubExerciseService(
@@ -112,26 +144,33 @@ public sealed class ExercisesControllerTests
     {
         public CancellationToken? ReceivedCancellationToken { get; private set; }
         public Guid? ReceivedExerciseId { get; private set; }
+        public Guid? ReceivedUserId { get; private set; }
 
         public Task<IReadOnlyList<ExerciseResponse>> GetAll(
+            Guid userId,
             CancellationToken cancellationToken)
         {
+            ReceivedUserId = userId;
             ReceivedCancellationToken = cancellationToken;
             return Task.FromResult(exercises);
         }
         public Task<ExerciseResponse?> GetById(
             Guid id,
+            Guid userId,
             CancellationToken cancellationToken)
         {
             ReceivedExerciseId = id;
+            ReceivedUserId = userId;
             ReceivedCancellationToken = cancellationToken;
             return Task.FromResult(exercises.SingleOrDefault(exercise => exercise.Id == id));
         }
 
         public Task<ExerciseResponse> Create(
             CreateExerciseRequest request,
+            Guid userId,
             CancellationToken cancellationToken)
         {
+            ReceivedUserId = userId;
             ReceivedCancellationToken = cancellationToken;
             return Task.FromResult(createdExercise!);
         }
