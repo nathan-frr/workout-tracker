@@ -12,13 +12,21 @@ This project is not deployed yet. It can be run locally:
    docker compose up -d
    ```
 
-2. Start the backend:
+2. Configure the local database connection:
+
+   ```bash
+   dotnet user-secrets set "ConnectionStrings:WorkoutTracker" "Host=localhost;Port=5432;Database=workout_tracker;Username=workout_tracker;Password=local_dev_only" --project backend/src/WorkoutTracker.Api/WorkoutTracker.Api.csproj --id WorkoutTracker-Api
+   ```
+
+   If you change the database password in `.env`, use that same password in the connection string.
+
+3. Start the backend:
 
    ```bash
    dotnet run --project backend/src/WorkoutTracker.Api
    ```
 
-3. In a second terminal, start the frontend:
+4. In a second terminal, start the frontend:
 
    ```bash
    cd frontend/workout-tracker
@@ -26,4 +34,4 @@ This project is not deployed yet. It can be run locally:
    npm start
    ```
 
-4. Open `http://localhost:4200` in your browser.
+5. Open `http://localhost:4200` in your browser.
