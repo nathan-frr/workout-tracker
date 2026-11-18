@@ -11,6 +11,7 @@ export const mockExercises: Exercise[] = [
     description: 'Barbell chest press.',
     equipmentType: EquipmentType.Barbell,
     mediaUrl: null,
+    assetId: null,
     trackingMode: TrackingMode.RepsAndWeight,
     isBuiltIn: true,
     muscleGroups: [
@@ -23,6 +24,7 @@ export const mockExercises: Exercise[] = [
     description: 'Squat using bodyweight resistance.',
     equipmentType: EquipmentType.Bodyweight,
     mediaUrl: null,
+    assetId: null,
     trackingMode: TrackingMode.Reps,
     isBuiltIn: true,
     muscleGroups: [
@@ -70,6 +72,7 @@ export class MockExercisesApiService {
       description: request.description,
       equipmentType: request.equipmentType,
       mediaUrl: request.mediaUrl,
+      assetId: null,
       trackingMode: request.trackingMode,
       isBuiltIn: false,
       muscleGroups: request.muscleGroups.map(group => ({

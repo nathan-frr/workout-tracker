@@ -14,6 +14,7 @@ describe('WorkoutExerciseEditor', () => {
       description: 'Barbell chest press.',
       equipmentType: EquipmentType.Barbell,
       mediaUrl: null,
+      assetId: null,
       trackingMode: TrackingMode.RepsAndWeight,
       isBuiltIn: true,
       muscleGroups: [

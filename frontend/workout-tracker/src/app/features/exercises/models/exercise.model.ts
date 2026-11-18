@@ -13,6 +13,7 @@ export interface Exercise {
   description: string | null;
   equipmentType: EquipmentType;
   mediaUrl: string | null;
+  assetId: string | null;
   trackingMode: TrackingMode;
   isBuiltIn: boolean;
   muscleGroups: ExerciseMuscleGroup[];
