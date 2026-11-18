@@ -23,6 +23,7 @@ public sealed class ExercisesControllerTests
                 Description: null,
                 EquipmentType: EquipmentType.Barbell,
                 MediaUrl: null,
+                AssetId: null,
                 TrackingMode: TrackingMode.RepsAndWeight,
                 IsBuiltIn: true,
                 MuscleGroups: [])
@@ -49,12 +50,13 @@ public sealed class ExercisesControllerTests
             Description: null,
             EquipmentType: EquipmentType.Barbell,
             MediaUrl: null,
+            AssetId: null,
             TrackingMode: TrackingMode.RepsAndWeight,
             IsBuiltIn: true,
             MuscleGroups: []);
         var service = new StubExerciseService([expected], expected);
-            var userId = Guid.NewGuid();
-            var controller = CreateController(service, userId);
+        var userId = Guid.NewGuid();
+        var controller = CreateController(service, userId);
         var cancellationToken = new CancellationToken(canceled: false);
 
         var actionResult = await controller.GetById(expected.Id, cancellationToken);
@@ -97,6 +99,7 @@ public sealed class ExercisesControllerTests
                 "Bench press",
                 null,
                 EquipmentType.Barbell,
+                null,
                 null,
                 TrackingMode.RepsAndWeight,
                 true,

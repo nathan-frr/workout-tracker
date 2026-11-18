@@ -30,6 +30,7 @@ public sealed class WorkoutsService(IApplicationDbContext context) : IWorkoutsSe
                     Id: workoutExercise.Exercise.Id,
                     Name: workoutExercise.Exercise.Name,
                     MediaUrl: workoutExercise.Exercise.MediaUrl,
+                    AssetId: workoutExercise.Exercise.AssetId,
                     EquipmentType: workoutExercise.Exercise.EquipmentType,
                     TrackingMode: workoutExercise.Exercise.TrackingMode),
                 Order: workoutExercise.Order,

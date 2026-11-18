@@ -18,6 +18,7 @@ public sealed class ExercisesService(IApplicationDbContext context) : IExercises
         Description: exercise.Description,
         EquipmentType: exercise.EquipmentType,
         MediaUrl: exercise.MediaUrl,
+        AssetId: exercise.AssetId,
         TrackingMode: exercise.TrackingMode,
         IsBuiltIn: exercise.IsBuiltIn,
         MuscleGroups: exercise.MuscleGroups

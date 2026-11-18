@@ -24,6 +24,7 @@ public record ExerciseSummaryResponse(
     Guid Id,
     string Name,
     string? MediaUrl,
+    string? AssetId,
     EquipmentType EquipmentType,
     TrackingMode TrackingMode);
 

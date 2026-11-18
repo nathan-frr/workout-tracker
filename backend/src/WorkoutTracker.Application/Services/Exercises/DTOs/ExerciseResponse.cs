@@ -8,6 +8,7 @@ public record ExerciseResponse(
     string? Description,
     EquipmentType EquipmentType,
     string? MediaUrl,
+    string? AssetId,
     TrackingMode TrackingMode,
     bool IsBuiltIn,
     IReadOnlyList<ExerciseMuscleGroupResponse> MuscleGroups);

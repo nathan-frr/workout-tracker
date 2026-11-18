@@ -158,6 +158,9 @@ namespace WorkoutTracker.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AssetId")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("CreatedByUserId")
                         .HasColumnType("uuid");
 
@@ -192,6 +195,10 @@ namespace WorkoutTracker.Infrastructure.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssetId")
+                        .IsUnique()
+                        .HasFilter("\"IsBuiltIn\" = TRUE AND \"AssetId\" IS NOT NULL");
 
                     b.HasIndex("IsDeleted");
 

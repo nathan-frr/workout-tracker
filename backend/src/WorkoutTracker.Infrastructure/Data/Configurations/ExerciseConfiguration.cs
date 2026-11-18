@@ -16,6 +16,9 @@ public class ExerciseConfiguration : IEntityTypeConfiguration<Exercise>
             .HasMaxLength(1000);
         builder.Property(exercise => exercise.MediaUrl)
             .HasMaxLength(2048);
+        builder.HasIndex(exercise => exercise.AssetId)
+            .IsUnique()
+            .HasFilter("\"IsBuiltIn\" = TRUE AND \"AssetId\" IS NOT NULL");
         builder.Property(exercise => exercise.IsDeleted)
             .HasDefaultValue(false);
         builder.HasIndex(exercise => exercise.IsDeleted);

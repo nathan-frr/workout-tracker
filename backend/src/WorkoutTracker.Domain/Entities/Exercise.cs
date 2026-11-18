@@ -14,6 +14,8 @@ public class Exercise
 
     public string? MediaUrl { get; set; }
 
+    public string? AssetId { get; set; }
+
     public TrackingMode TrackingMode { get; set; }
 
     public bool IsBuiltIn { get; set; }
