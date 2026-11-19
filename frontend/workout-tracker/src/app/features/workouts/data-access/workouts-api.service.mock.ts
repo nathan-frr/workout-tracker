@@ -24,6 +24,7 @@ export const mockWorkouts: WorkoutSession[] = [
           id: '00000000-0000-0000-0000-00000000025',
           name: 'Bench Press',
           mediaUrl: null ,
+          assetId: null,
           equipmentType: EquipmentType.Barbell,
           trackingMode: TrackingMode.RepsAndWeight
         },
@@ -78,6 +79,7 @@ export class MockWorkoutsApiService {
           id: workoutExercise.exerciseId,
           name: 'Bench Press',
           mediaUrl: null,
+          assetId: null,
           equipmentType: EquipmentType.Barbell,
           trackingMode: TrackingMode.RepsAndWeight,
         },

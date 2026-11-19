@@ -13,6 +13,7 @@ export interface ExerciseSummary {
   id: string;
   name: string;
   mediaUrl: string | null;
+  assetId: string | null;
   equipmentType: EquipmentType;
   trackingMode: TrackingMode;
 }
