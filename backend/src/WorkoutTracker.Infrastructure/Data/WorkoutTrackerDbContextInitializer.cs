@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-using WorkoutTracker.Domain.Enums;
 using WorkoutTracker.Domain.Entities;
 
 namespace WorkoutTracker.Infrastructure.Data;
@@ -57,11 +56,11 @@ public class WorkoutTrackerDbContextInitializer
         // Seed built-in exercises if they don't already exist.
         var existingExerciseNames = await _context.Exercises
             .Where(e => e.IsBuiltIn)
-            .Select(e => e.Name)
+            .Select(e => e.AssetId)
             .ToHashSetAsync();
 
         var missingExercises = ExercisesList.BuiltInExercises
-            .Where(e => !existingExerciseNames.Contains(e.Name))
+            .Where(e => !existingExerciseNames.Contains(e.AssetId))
             .ToArray();
 
         if (missingExercises.Length > 0)
@@ -89,9 +88,9 @@ public class WorkoutTrackerDbContextInitializer
             var muscleGroups = await _context.MuscleGroups.ToDictionaryAsync(g => g.Name);
             var exercises = await _context.Exercises
                 .Where(e => e.IsBuiltIn)
-                .ToDictionaryAsync(e => e.Name);
+                .ToDictionaryAsync(e => e.AssetId!);
 
-            exercises["Bench Press"].MuscleGroups.Add(new ExerciseMuscleGroup
+            exercises["bench-press"].MuscleGroups.Add(new ExerciseMuscleGroup
             {
                 MuscleGroup = muscleGroups["Chest"]
             });

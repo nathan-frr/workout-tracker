@@ -5,6 +5,7 @@ public enum EquipmentType
     Bodyweight,
     Barbell,
     Dumbbell,
+    Kettlebell,
     Machine,
     Cable,
     Other
